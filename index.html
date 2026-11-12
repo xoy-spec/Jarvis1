@@ -269,6 +269,18 @@
   .tool em { font-style: normal; font-size: 11px; padding: 4px 9px; border-radius: 12px; background: rgba(255,255,255,.07); opacity: .8; white-space: nowrap; }
   .disc { margin-top: 22px; font-size: 12px; line-height: 1.5; opacity: .5; }
 
+  /* ---- v56: Gründerkurs ---- */
+  .kbar { height: 6px; border-radius: 6px; background: rgba(255,255,255,.1); overflow: hidden; margin: 6px 0 14px; }
+  .kbar i { display: block; height: 100%; background: var(--a); border-radius: 6px; }
+  .ktask { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.08); cursor: pointer; }
+  .ktask:first-of-type { border-top: 0; }
+  .ktask .bx { flex: none; width: 24px; height: 24px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,.35); display: grid; place-items: center; font-size: 14px; color: var(--on); }
+  .ktask.d .bx { background: var(--a); border-color: var(--a); }
+  .ktask.d .tx { opacity: .5; text-decoration: line-through; }
+  .kw { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.08); font-size: 15px; }
+  .kw .n { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,.3); }
+  .kw.d .n { background: var(--a); border-color: var(--a); color: var(--on); }
+  .kw.l { opacity: .45; }
   /* ---- v55: weniger Text ---- */
   #notes .pagehead .hsub, #found .pagehead .hsub, #mk .pagehead .hsub, #bu .hsub { display: none; }
   #mkbody .hsub, #fform .expl, #fideas .expl, #found .fgrp small, #found .rm .t span { display: none; }
@@ -556,8 +568,9 @@
 <div id="found" style="display:none">
   <div class="pagehead"><h2>Startup</h2><div class="hsub">Von der Idee zum ersten Kunden, Schritt für Schritt.</div></div>
   <div class="tcard wide" id="tc-found"></div>
-  <div class="seg"><button class="sub on" id="fs-i" onclick="fsub('i')">Idee</button><button class="sub" id="fs-p" onclick="fsub('p')">Lohnt sich?</button><button class="sub" id="fs-c" onclick="fsub('c')">Rechner</button><button class="sub" id="fs-r" onclick="fsub('r')">Verkaufen</button></div>
-  <div id="fideas">
+  <div class="seg"><button class="sub on" id="fs-k" onclick="fsub('k')">Kurs</button><button class="sub" id="fs-i" onclick="fsub('i')">Idee</button><button class="sub" id="fs-p" onclick="fsub('p')">Lohnt sich?</button><button class="sub" id="fs-c" onclick="fsub('c')">Rechner</button><button class="sub" id="fs-r" onclick="fsub('r')">Verkaufen</button></div>
+  <div id="fkurs"></div>
+  <div id="fideas" style="display:none">
   <div id="fform"></div>
   <div id="fres"></div>
   <div class="disc">Hinweis: Das sind Ideen und keine Gewinn-Garantie. Prüfe vor dem Start Gewerbeanmeldung, Steuern und Verträge. Empfehlungen mit Provision müssen später klar als Werbung gekennzeichnet werden.</div>
@@ -2599,7 +2612,7 @@ function buildSettings() {
   if (!b) return;
   let on = false;
   try { on = !!localStorage.getItem("jarvis_fid"); } catch (e) {}
-  b.innerHTML = '<div class="mh" style="margin-top:6px">Sicherheit</div><div class="hsub" style="font-size:13px;opacity:.6">Face ID sperrt die App auf diesem Gerät. Der Zugangscode bleibt der eigentliche Schutz der Daten.</div><div class="acts"></div><div class="mh">Profil</div><div class="acts"></div><div class="mh">Daten</div><div class="acts"></div><div class="hsub" id="fidmsg" style="font-size:13px;margin-top:8px"></div><div class="hsub" style="font-size:11px;opacity:.4;margin-top:6px">Jarvis v55</div>';
+  b.innerHTML = '<div class="mh" style="margin-top:6px">Sicherheit</div><div class="hsub" style="font-size:13px;opacity:.6">Face ID sperrt die App auf diesem Gerät. Der Zugangscode bleibt der eigentliche Schutz der Daten.</div><div class="acts"></div><div class="mh">Profil</div><div class="acts"></div><div class="mh">Daten</div><div class="acts"></div><div class="hsub" id="fidmsg" style="font-size:13px;margin-top:8px"></div><div class="hsub" style="font-size:11px;opacity:.4;margin-top:6px">Jarvis v56</div>';
   const acts = b.querySelectorAll(".acts");
   const mk = (host, l, fn) => { const x = document.createElement("button"); x.className = "smallbtn"; x.textContent = l; x.onclick = fn; host.appendChild(x); };
   mk(acts[0], on ? "Face ID ausschalten" : "Face ID einschalten", on ? fidOff : enableFid);
@@ -2634,6 +2647,9 @@ const ST = ["Eingekauft", "Online", "Verkauft"];
 function fsub(k) {
   try { document.getElementById("fplanv").style.display = "none"; document.querySelectorAll("#found > .pagehead, #found > .tcard, #found > .seg").forEach(e => { e.style.display = ""; }); } catch (e) {}
   document.getElementById("fideas").style.display = k === "i" ? "block" : "none";
+  document.getElementById("fkurs").style.display = k === "k" ? "block" : "none";
+  document.getElementById("fs-k").classList.toggle("on", k === "k");
+  if (k === "k") { try { drawKurs(); } catch (e) { console.error(e); } }
   document.getElementById("freseller").style.display = k === "r" ? "block" : "none";
   document.getElementById("fplan").style.display = k === "p" ? "block" : "none";
   document.getElementById("fcalc").style.display = k === "c" ? "block" : "none";
@@ -3492,6 +3508,10 @@ function homeNext() {
   if (due) return { k: "Heute fällig", t: due.text.replace(/^[^|]*\|\s*/, ""), s: "Aus deinen Aufgaben", b: "Zu den Aufgaben", fn: () => { show("notes"); try { subTab("t"); } catch (e) {} } };
   const dk = decks.filter(d => d.cards.some(c => (c.k || 0) < 2))[0];
   if (dk && (lst.days[tdy] || 0) < DAYGOAL) return { k: "Karteikarten", t: dk.topic, s: dk.cards.filter(c => (c.k || 0) < 2).length + " Karten offen", b: "Üben", fn: () => { show("school"); showDecks(); } };
+  try {
+    if (Object.keys(kurs.done).length && kCur() < KURS.length) { const w = kCur(), i = kTasks(w).findIndex((x, j) => !kDone(w, j)); return { k: "Startup · Woche " + (w + 1), t: kTasks(w)[i], s: KURS[w].t, b: "Öffnen", fn: () => { show("found"); fsub("k"); } }; }
+    if (!Object.keys(kurs.done).length && prof && (prof.use || []).indexOf("Eigene Startup-Idee") >= 0) return { k: "Startup", t: "Gründerkurs starten", s: "6 Wochen, jede Woche eine kleine Aufgabe", b: "Los", fn: () => { show("found"); fsub("k"); } };
+  } catch (e) {}
   return { k: "Los geht's", t: "Hausaufgabe fotografieren", s: "Jarvis hilft dir Schritt für Schritt", b: "Foto machen", fn: hwGo };
 }
 function fillHome() {
@@ -5915,6 +5935,62 @@ function drawGame(b) {
   b.appendChild(dn);
 }
 
+
+/* ---- Gründerkurs ---- */
+const KURS = [
+  { t: "Idee wählen", g: "Finde ein Problem, das du lösen willst.", k: ["5 Probleme aus meinem Alltag aufschreiben", "Meine Idee in einem Satz aufschreiben", "Jarvis die Idee prüfen lassen"], q: "Hilf mir, aus meinen Alltagsproblemen eine Startup-Idee zu wählen. Stelle mir erst drei kurze Fragen." },
+  { t: "Zielgruppe", g: "Du weißt, für wen du das machst.", k: ["Meine Zielgruppe in 2 Sätzen beschreiben", "3 Leute aus der Zielgruppe fragen, was sie nervt", "Die Antworten aufschreiben"], q: "Hilf mir, meine Zielgruppe zu bestimmen und gute Fragen für ein kurzes Gespräch mit drei Leuten zu finden." },
+  { t: "Angebot und Preis", g: "Du weißt, was du anbietest und was es kostet.", k: ["In einem Satz aufschreiben, was ich anbiete", "Den Preis im Reiter „Lohnt sich?“ durchrechnen", "3 ähnliche Angebote anschauen"], q: "Hilf mir, mein Angebot klar zu formulieren und einen fairen Preis zu finden." },
+  { t: "Mini-Test", g: "Du probierst es im Kleinen aus.", k: ["Eine einfache Testversion machen (Zettel, Foto, Probe)", "Eine Person testen lassen", "Das Feedback aufschreiben"], q: "Hilf mir, mein Angebot mit einem ganz kleinen Test auszuprobieren, der keinen Cent kostet." },
+  { t: "Erster Kunde", g: "Jemand sagt Ja.", k: ["10 Leute ansprechen", "Eine feste Zusage oder einen Verkauf bekommen", "Aufschreiben, was geklappt hat und was nicht"], m: ["Mit meinen Eltern besprechen, was ich verkaufen und mit Geld machen darf", "Familie und Freunde ansprechen (5 Leute)", "Aufschreiben, was geklappt hat und was nicht"], q: "Hilf mir, meinen ersten Kunden zu finden und freundlich anzusprechen." },
+  { t: "Entscheiden", g: "Du entscheidest, wie es weitergeht.", k: ["Einnahmen und Kosten ansehen", "Entscheiden: weitermachen, ändern oder stoppen", "Die nächsten 3 Ziele festlegen"], q: "Hilf mir zu entscheiden, ob ich mein Projekt weitermachen, ändern oder stoppen soll." }
+];
+let kurs = load("jarvis_course", null);
+if (!kurs || !kurs.done) kurs = { done: {} };
+const kTasks = w => (ageMinor() && KURS[w].m) || KURS[w].k;
+const kDone = (w, i) => !!kurs.done["" + w + "-" + i];
+const kWeekDone = w => kTasks(w).every((x, i) => kDone(w, i));
+function kCur() { for (let w = 0; w < KURS.length; w++) if (!kWeekDone(w)) return w; return KURS.length; }
+function kCount() { let c = 0, n = 0; KURS.forEach((k, w) => kTasks(w).forEach((x, i) => { n++; if (kDone(w, i)) c++; })); return [c, n]; }
+function kToggle(w, i) { const key = "" + w + "-" + i; if (kurs.done[key]) delete kurs.done[key]; else kurs.done[key] = 1; save("jarvis_course", kurs); drawKurs(); try { fillHome(); } catch (e) {} }
+let kReset = false;
+function drawKurs() {
+  const h = document.getElementById("fkurs"); if (!h) return;
+  h.innerHTML = "";
+  const cur = kCur(), cn = kCount();
+  const top = document.createElement("div");
+  top.innerHTML = '<div class="mh" style="margin-top:14px">Gründerkurs</div><div class="kbar"><i style="width:' + Math.round(cn[0] / cn[1] * 100) + '%"></i></div>';
+  h.appendChild(top);
+  if (cur >= KURS.length) {
+    const d = document.createElement("div"); d.className = "tcard"; d.innerHTML = "<h3>Geschafft</h3>"; 
+    const p = document.createElement("div"); p.style.cssText = "padding:6px 0 12px;font-size:15px"; p.textContent = "Du hast alle 6 Wochen durch. Mach mit deinen nächsten 3 Zielen weiter.";
+    d.appendChild(p); h.appendChild(d);
+  } else {
+    const k = KURS[cur], c = document.createElement("div"); c.className = "tcard";
+    c.innerHTML = "<h3></h3>"; c.firstChild.textContent = "Woche " + (cur + 1) + " von " + KURS.length + " · " + k.t;
+    const g = document.createElement("div"); g.style.cssText = "font-size:14px;opacity:.75;margin:0 0 6px"; g.textContent = k.g; c.appendChild(g);
+    kTasks(cur).forEach((tx, i) => {
+      const r = document.createElement("div"); r.className = "ktask" + (kDone(cur, i) ? " d" : "");
+      r.innerHTML = '<div class="bx">' + (kDone(cur, i) ? "✓" : "") + '</div><div class="tx"></div>'; r.lastChild.textContent = tx;
+      r.onclick = () => kToggle(cur, i); c.appendChild(r);
+    });
+    const b = document.createElement("button"); b.className = "cta"; b.textContent = "Jarvis fragen";
+    b.onclick = () => { show("chat"); document.getElementById("in").value = k.q; send(); };
+    c.appendChild(b); h.appendChild(c);
+  }
+  const wk = document.createElement("div"); wk.style.marginTop = "6px";
+  KURS.forEach((k, w) => {
+    const r = document.createElement("div"); r.className = "kw" + (kWeekDone(w) ? " d" : w > cur ? " l" : "");
+    r.innerHTML = '<div class="n">' + (kWeekDone(w) ? "✓" : w + 1) + '</div><div></div>'; r.lastChild.textContent = k.t; wk.appendChild(r);
+  });
+  h.appendChild(wk);
+  if (cn[0]) {
+    const rs = document.createElement("button"); rs.className = "smallbtn"; rs.style.marginTop = "16px"; rs.textContent = kReset ? "Sicher? Nochmal tippen" : "Kurs neu starten";
+    rs.onclick = () => { if (!kReset) { kReset = true; rs.textContent = "Sicher? Nochmal tippen"; setTimeout(() => { kReset = false; try { rs.textContent = "Kurs neu starten"; } catch (e) {} }, 4000); return; } kReset = false; kurs = { done: {} }; save("jarvis_course", kurs); drawKurs(); try { fillHome(); } catch (e) {} };
+    h.appendChild(rs);
+  }
+}
+
 /* ---- Einstiegsfragen ---- */
 const OQ = [
   { k: "age", q: "Wie alt bist du?", multi: false, o: ["unter 14", "14–15", "16–17", "18–24", "25–30", "über 30"] },
@@ -6002,7 +6078,7 @@ function closeOnb(saveIt) {
 }
 document.getElementById("onbgo").onclick = () => closeOnb(true);
 document.getElementById("onbskip").onclick = () => closeOnb(false);
-try { fillHome(); show("home"); } catch (e) { console.error(e); }
+try { fillHome(); drawKurs(); show("home"); } catch (e) { console.error(e); }
 try { if (!prof || !prof.done) openOnb(); } catch (e) {}
 try { initLock(); } catch (e) {}
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") pullSync(); });
