@@ -1,0 +1,10 @@
+name = "jarvis-api"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+[[kv_namespaces]]
+binding = "JARVIS_KV"
+id = "f09da77aa2944dbfbe26c284109fb3bd"
+
+[triggers]
+crons = ["* * * * *"]
